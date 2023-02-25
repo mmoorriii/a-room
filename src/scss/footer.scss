@@ -1,0 +1,160 @@
+.footer {
+   padding: 40px 0 20px;
+   border-top: 2px solid rgba(255, 255, 255, 0.309804);
+}
+
+.footer__top-line {
+   margin-bottom: 30px;
+}
+
+.top-line {}
+
+.top-line__row {
+   @extend %row;
+   align-items: center;
+}
+
+.top-line__logo {}
+
+.logo {}
+
+.top-line__nav {}
+
+.tip-line__list {
+   display: flex;
+}
+
+.top-line__item {
+   box-sizing: border-box;
+   text-transform: uppercase;
+   font-weight: 600;
+   font-size: 14px;
+   line-height: 179%;
+
+   &:not(:last-child) {
+      margin-right: 10px;
+   }
+
+   a {
+      display: inline-block;
+      padding: 10px 25px;
+      border: 2px solid #e15bff00;
+      border-radius: 22px;
+      transition: all 0.6s ease;
+
+      &:hover {
+         border: 2px solid #E05BFF;
+         border-radius: 22px;
+      }
+
+      &._active {
+         border: 2px solid #E05BFF;
+         border-radius: 22px;
+      }
+   }
+}
+
+.top-line__social {}
+
+.social {}
+
+.social__item {
+   display: inline-block;
+   width: 35px;
+   height: 35px;
+   border-radius: 50%;
+   border: 2px solid #7646A2;
+   line-height: 35px;
+   text-align: center;
+   transition: all 0.5s ease;
+
+   &:not(:last-child) {
+      margin-right: 5px;
+   }
+
+   &:hover {
+      transform: scale(1.2);
+      background: linear-gradient(to bottom, rgba(238, 157, 255, 1) 0%, rgba(238, 157, 255, 1) 4%, rgba(142, 47, 164, 1) 100%);
+
+      span {
+         line-height: 25px;
+         display: inline-block;
+         width: 22px;
+         height: 22px;
+         border-radius: 50%;
+         background-color: #fff;
+      }
+
+      #fb path {
+         fill: #5368E7;
+      }
+
+      #inst path {
+         fill: #f928d5;
+      }
+
+      #twitter path {
+         fill: #1da1f3;
+      }
+
+      #youtube path {
+         fill: red;
+      }
+   }
+}
+
+//span {
+//   svg {
+//      &:hover {
+//         transform: scale(1);
+//         fill: #5368E7;
+//      }
+//   }
+//}
+
+
+.footer__bottom-line {}
+
+.bottom-line {}
+
+.bottom-line__row {
+   @extend %row;
+   font-weight: 500;
+   font-size: 13px;
+   line-height: 192%;
+}
+
+.bottom-line__politics {
+   text-transform: capitalize;
+
+   a {
+      display: inline-block;
+
+      &:not(:last-child) {
+         margin-right: 10px;
+      }
+
+      &:hover {
+         text-decoration: underline;
+      }
+   }
+}
+
+.bottom-line__copy {
+   position: relative;
+   left: -50px;
+}
+
+.bottom-line__numbers {
+   a {
+      display: inline-block;
+
+      &:not(:last-child) {
+         margin-right: 10px;
+      }
+
+      &:hover {
+         text-decoration: underline;
+      }
+   }
+}
