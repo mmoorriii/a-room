@@ -336,6 +336,7 @@ $mobileSmall: em(479.98); // Телефони S
 }
 
 .slider-preview__buttons {
+	display: inline-block;
    transform: translateY(-70px);
 }
 

@@ -1,5 +1,5 @@
 "use strict"
-
+//ПРИСВАИВАЕМ ИМЕНА СКАЧЕННЫХ ПЛАГИНАМ
 const { src, dest } = require("gulp");
 const gulp = require("gulp");
 const fileInclude = require('gulp-file-include');
@@ -29,7 +29,7 @@ const browserSync = require("browser-sync").create();
 
 /* Modes */
 const isBuild = process.argv.includes('--build')
-const isDev = !process.argv.includes('--build')
+//const isDev = !process.argv.includes('--build')
 
 /* Paths */
 const srcPath = "src/"
@@ -60,6 +60,7 @@ const path = {
    clean: "./" + distPath
 }
 
+//-------ЛОКАЛЬНЫЙ СЕРВЕР---------------------------------------------------------------------//
 function serve() {
    browserSync.init({
       server: {
@@ -71,16 +72,16 @@ function serve() {
 
 function html() {
    return src(path.src.html, { base: srcPath })
-      .pipe(plumber(
+      .pipe(plumber(                            //ОТСЛЕЖИВАЕМ ОШИБКИ
          notify.onError({
             title: "HTML Error",
             message: "Error: <%= error.message %>"
          })
       ))
-      .pipe(fileInclude())
-      .pipe(replace(/@img\//g, '../img/'))
-      .pipe(ifPlugin(isBuild, webpHtmlNosvg()))
-      .pipe(ifPlugin(isBuild,
+      .pipe(fileInclude())                      //ВОЗМОЖНОСТЬ ДОБАВЛЕНИЯ ФАЙЛОВ С ПОМОЩЬЮ @@INCLUDE
+      .pipe(replace(/@img\//g, '../img/'))      //ПРЕОБРАЗУЕТ @IMG В ../IMG
+      .pipe(ifPlugin(isBuild, webpHtmlNosvg())) //ДОБАВЛЯЕТ WEBP ФОРМАТ ИЗОБРАЖЕНИЯ ЕСЛИ БРАУЗЕР ПОЗВОЛЯЕТ
+      .pipe(ifPlugin(isBuild,                   //ДОБАВЯЛЕТ ДАТУ К ФАЙЛАМ ПОДКЛЮЧЕНИЯ CSS И JS
          versionNumber({
             'value': '%DT%',
             'append': {
@@ -96,8 +97,8 @@ function html() {
             }
          })
       ))
-      .pipe(removeHtmlComments())
-      .pipe(dest(path.build.html))
+      .pipe(removeHtmlComments())              //УДАЛЯЕТ КОММЕНТЫ ИЗ HTML
+      .pipe(dest(path.build.html))             //ВЫГРУЖАЕТ В ПАПКУ SRC
       .pipe(browserSync.reload({ stream: true }));
 }
 
@@ -110,9 +111,9 @@ function css() {
          })
       ))
       .pipe(replace(/@img\//g, '../img/'))
-      .pipe(sass())
-      .pipe(gulpGroupCssMedia())
-      .pipe(ifPlugin(isBuild, webpCss({
+      .pipe(sass())                             //КОМПИЛЯТОР SCSS В СSS
+      .pipe(gulpGroupCssMedia())                //ГРУППИРУЕТ МЕДИА-ЗАПРОСЫ
+      .pipe(ifPlugin(isBuild, webpCss({         //ДОБАВЛЯЕТ КЛАССЫ В CSS (ДЛЯ ДОБАВЛЕНИЯ WEBP КАРТИНОК)
          webpClass: ".webp",
          noWebpClass: ".no-webp"
       })))
@@ -121,16 +122,18 @@ function css() {
          ovverideBrowserlist: ['last 20 versions'],
          cascade: false
       }))
-      .pipe(cssbeautify())
+      .pipe(cssbeautify({                      //ДЕЛАЕТ КОД КРАСИВЫМ :)
+         indent: '   ',
+      }))
       .pipe(dest(path.build.css))
-      .pipe(cssnano({
+      .pipe(cssnano({                          //МИНИФИКАЦИЯ СSS
          zindex: false,
          discardComments: {
             removeAll: true
          }
       }))
       .pipe(removeComments())
-      .pipe(rename({
+      .pipe(rename({                           //ПЕРЕИМЕНОВЫВАЕМ SCSS В СSS И ДОБАВЛЯЕМ СУФФИКС .MIN
          suffix: ".min",
          extname: ".css"
       }))
@@ -148,7 +151,7 @@ function js() {
       ))
       .pipe(rigger())
       .pipe(dest(path.build.js))
-      .pipe(uglify())
+      .pipe(uglify())                      //СЖИМАЕМ JS
       .pipe(rename({
          suffix: ".min",
          extname: ".js"
@@ -165,7 +168,7 @@ function images() {
             message: "Error: <%= error.message %>"
          })
       ))
-      .pipe(newer(path.build.images))
+      .pipe(newer(path.build.images))                  //ЕСЛИ КАРТИНКА УЖЕ ДОБАВЛЕНА, ТО ЕЕ НЕ ОПТИМИЗИРУЕТ
       .pipe(ifPlugin(isBuild, imagemin([
          imagemin.gifsicle({ interlaced: true }),
          imagemin.mozjpeg({ quality: 80, progressive: true }),
@@ -181,7 +184,7 @@ function images() {
       .pipe(browserSync.reload({ stream: true }));
 }
 
-function webpImages() {
+function webpImages() {                                             //ДОБАВЛЯЕТ ПОМИМО PNG ИЛИ JPEG ЕЩЕ + WEBP
    return src(path.src.images, { base: srcPath + "img/" })
       .pipe(imagewebp())
       .pipe(dest(path.build.images))
@@ -193,11 +196,11 @@ function webpImages() {
 //      .pipe(browserSync.reload({ stream: true }));
 //}
 
-function clean() {
+function clean() {                    //ПРИ УДАЛЕНИИ ФАЙЛА ИЗ SRC УДАЛЯЕТ ФАЙЛ ИЗ DIST
    return del(path.clean)
 }
 
-function zip() {
+function zip() {                             //ЗАПАКОВКА В ZIP (npm run zip)
    return src(`${distPath}/**/*.*`, {})
       .pipe(plumber(
          notify.onError({
@@ -209,7 +212,7 @@ function zip() {
       .pipe(dest('./'))
 }
 
-function watchFiles() {
+function watchFiles() {                         //ОТСЛЕЖИВАЕТ АВТОМАТИЧЕСКИ ВСЕ ИЗМЕНЕНИЯ В ПРОЕКТЕ
    gulp.watch([path.watch.html], html)
    gulp.watch([path.watch.css], css)
    gulp.watch([path.watch.js], js)
@@ -219,8 +222,8 @@ function watchFiles() {
 
 const mainTasks = gulp.parallel(html, css, js, images)
 
-const dev = gulp.series(clean, mainTasks, gulp.parallel(watchFiles, serve))
-const build = gulp.series(clean, mainTasks, webpImages)
+const dev = gulp.series(clean, mainTasks, gulp.parallel(watchFiles, serve))  //ТАСКИ ДЛЯ РЕЖИМА DEV 
+const build = gulp.series(clean, mainTasks, webpImages)                      //ТАКИ ДЛЯ РЕЖИМА BUILD
 const deployZip = gulp.series(mainTasks, zip)
 
 
